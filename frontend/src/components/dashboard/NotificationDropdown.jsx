@@ -1,11 +1,40 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useRealtime } from "../../context/RealtimeContext";
+import { emergencyService } from "../../services/emergencyService";
 
 const NotificationDropdown = () => {
   const [open, setOpen] = useState(false);
-  const { notifications, clearNotifications } = useRealtime();
+  const [approving, setApproving] = useState(false);
+  const { notifications, clearNotifications, removeNotification } = useRealtime();
 
-  return (
+  const handleApprove = async (notification) => {
+    try {
+      setApproving(true);
+      const requestId = notification.payload._id;
+      await emergencyService.approve(requestId);
+      removeNotification(notification.id);
+      toast.success("Request approved successfully");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to approve request");
+    } finally {
+      setApproving(false);
+    }
+  };
+
+  const handleReject = async (notification) => {
+    try {
+      setApproving(true);
+      const requestId = notification.payload._id;
+      await emergencyService.reject(requestId, "");
+      removeNotification(notification.id);
+      toast.success("Request rejected");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to reject request");
+    } finally {
+      setApproving(false);
+    }
+  };
     <div className="relative">
       <button
         type="button"

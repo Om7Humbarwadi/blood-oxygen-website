@@ -16,7 +16,13 @@ export const setupInterceptors = (store) => {
   api.interceptors.request.use(
     (config) => {
       store.dispatch(startGlobalLoading());
-      const token = store.getState().auth.token;
+      let token = store.getState().auth.token;
+      
+      // Fallback to localStorage if token not in Redux store
+      if (!token) {
+        token = localStorage.getItem("hem_access_token");
+      }
+      
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

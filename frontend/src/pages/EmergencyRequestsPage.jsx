@@ -4,6 +4,7 @@ import EmergencyTable from "../components/emergency/EmergencyTable";
 import EmergencyRequestModal from "../components/emergency/EmergencyRequestModal";
 import Pagination from "../components/inventory/Pagination";
 import { emergencyService } from "../services/emergencyService";
+import { useRealtime } from "../context/RealtimeContext";
 
 const initialForm = {
   patientName: "",
@@ -14,6 +15,7 @@ const initialForm = {
 };
 
 const EmergencyRequestsPage = () => {
+  const { notifications } = useRealtime();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -44,6 +46,16 @@ const EmergencyRequestsPage = () => {
   useEffect(() => {
     fetchData();
   }, [page, search, status, priority]);
+
+  // Auto-refresh when new emergency request is created via socket
+  useEffect(() => {
+    if (notifications?.length > 0) {
+      const latestNotification = notifications[0];
+      if (latestNotification.type === "new-emergency") {
+        fetchData();
+      }
+    }
+  }, [notifications]);
 
   const createRequest = async (event) => {
     event.preventDefault();
