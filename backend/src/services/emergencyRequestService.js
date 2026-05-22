@@ -4,7 +4,12 @@ import AppError from "../utils/AppError.js";
 const sanitize = (doc) => (doc.toObject ? doc.toObject() : doc);
 
 export const createEmergencyRequest = async (payload) => {
-  const created = await EmergencyRequest.create(payload);
+  const created = await EmergencyRequest.create({
+    ...payload,
+    status: "PENDING",
+    assignedDonor: "",
+    resolvedAt: null,
+  });
   return sanitize(created);
 };
 

@@ -46,11 +46,11 @@ export const recentActivities = [
 ];
 
 export const sidebarItems = [
-  { id: "dashboard", label: "Dashboard", path: "/dashboard" },
-  { id: "inventory", label: "Blood Inventory", path: "/inventory" },
-  { id: "oxygen", label: "Oxygen Inventory", path: "/oxygen" },
-  { id: "requests", label: "Emergency Requests", path: "/requests" },
-  { id: "reports", label: "Reports & Analytics", path: "/reports" },
-  { id: "donors", label: "Donors", path: "/dashboard" },
-  { id: "approvals", label: "Approvals", path: "/dashboard" },
+  { id: "dashboard", label: "Dashboard", path: "/admin/dashboard" },
+  { id: "inventory", label: "Blood Inventory", path: "/admin/inventory" },
+  { id: "oxygen", label: "Oxygen Inventory", path: "/admin/oxygen" },
+  { id: "requests", label: "Emergency Requests", path: "/admin/requests" },
+  { id: "reports", label: "Reports & Analytics", path: "/admin/reports" },
+  { id: "donors", label: "Donors", path: "/admin/dashboard" },
+  { id: "approvals", label: "Approvals", path: "/admin/dashboard" },
 ];

@@ -1,6 +1,9 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "../pages/LoginPage";
+import HospitalLoginPage from "../pages/HospitalLoginPage";
+import HospitalSignupPage from "../pages/HospitalSignupPage";
 import DashboardPage from "../pages/DashboardPage";
+import HospitalDashboardPage from "../pages/HospitalDashboardPage";
 import InventoryPage from "../pages/InventoryPage";
 import OxygenInventoryPage from "../pages/OxygenInventoryPage";
 import EmergencyRequestsPage from "../pages/EmergencyRequestsPage";
@@ -8,19 +11,33 @@ import ReportsAnalyticsPage from "../pages/ReportsAnalyticsPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import { ROLES } from "../utils/roles";
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/admin" element={<LoginPage />} />
+      <Route path="/hospital/login" element={<HospitalLoginPage />} />
+      <Route path="/hospital/signup" element={<HospitalSignupPage />} />
+      <Route
+        path="/hospital/dashboard"
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.HOSPITAL]} loginPath="/hospital/login">
+            <DashboardLayout>
+              <HospitalDashboardPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
 
-      <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout><DashboardPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/inventory" element={<ProtectedRoute><DashboardLayout><InventoryPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/oxygen" element={<ProtectedRoute><DashboardLayout><OxygenInventoryPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/requests" element={<ProtectedRoute><DashboardLayout><EmergencyRequestsPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/reports" element={<ProtectedRoute><DashboardLayout><ReportsAnalyticsPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN, ROLES.BLOOD_BANK, ROLES.OXYGEN_SUPPLIER]}><DashboardLayout><DashboardPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/admin/inventory" element={<ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN, ROLES.BLOOD_BANK]}><DashboardLayout><InventoryPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/admin/oxygen" element={<ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN, ROLES.OXYGEN_SUPPLIER]}><DashboardLayout><OxygenInventoryPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/admin/requests" element={<ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN, ROLES.BLOOD_BANK]}><DashboardLayout><EmergencyRequestsPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]}><DashboardLayout><ReportsAnalyticsPage /></DashboardLayout></ProtectedRoute>} />
 
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/login" element={<Navigate to="/admin" replace />} />
+      <Route path="/" element={<Navigate to="/admin" replace />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

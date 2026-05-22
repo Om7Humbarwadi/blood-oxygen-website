@@ -1,25 +1,21 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { clearAuthError, loginThunk } from "../redux/authSlice";
+import { clearAuthError, loginThunk, logout } from "../redux/authSlice";
 import InputField from "../components/common/InputField";
 import Button from "../components/common/Button";
 import { ROLES } from "../utils/roles";
 
-const LoginPage = () => {
+const HospitalLoginPage = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, isAuthenticated, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      if (user?.role === ROLES.HOSPITAL) {
-        navigate("/hospital/dashboard", { replace: true });
-      } else {
-        navigate("/admin/dashboard", { replace: true });
-      }
+    if (isAuthenticated && user?.role === ROLES.HOSPITAL) {
+      navigate("/hospital/dashboard", { replace: true });
     }
   }, [isAuthenticated, user, navigate]);
 
@@ -39,12 +35,14 @@ const LoginPage = () => {
     const result = await dispatch(loginThunk(form));
 
     if (loginThunk.fulfilled.match(result)) {
-      toast.success("Login successful");
-      if (result.payload?.user?.role === ROLES.HOSPITAL) {
-        navigate("/hospital/dashboard", { replace: true });
-      } else {
-        navigate("/admin/dashboard", { replace: true });
+      const loggedInUserRole = result.payload?.user?.role;
+      if (loggedInUserRole !== ROLES.HOSPITAL) {
+        dispatch(logout());
+        toast.error("This login is only for hospital users");
+        return;
       }
+      toast.success("Hospital login successful");
+      navigate("/hospital/dashboard", { replace: true });
     }
   };
 
@@ -54,9 +52,9 @@ const LoginPage = () => {
       <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-red-300/50 blur-3xl" />
 
       <div className="relative w-full max-w-md rounded-2xl border border-white/70 bg-white/90 p-8 shadow-xl backdrop-blur">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-500">Emergency Admin</p>
-        <h1 className="mt-2 text-3xl font-bold text-slate-900">Sign In</h1>
-        <p className="mt-2 text-sm text-slate-600">Secure access to healthcare emergency command center.</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-500">Hospital Portal</p>
+        <h1 className="mt-2 text-3xl font-bold text-slate-900">Hospital Sign In</h1>
+        <p className="mt-2 text-sm text-slate-600">Access blood and oxygen availability and create emergency requests.</p>
 
         <form className="mt-6 space-y-4" onSubmit={onSubmit}>
           <InputField
@@ -65,7 +63,7 @@ const LoginPage = () => {
             name="email"
             value={form.email}
             onChange={onChange}
-            placeholder="admin@hospital.com"
+            placeholder="hospital@care.com"
           />
           <InputField
             label="Password"
@@ -79,9 +77,16 @@ const LoginPage = () => {
             Log In
           </Button>
         </form>
+
+        <p className="mt-4 text-sm text-slate-600">
+          New hospital?{" "}
+          <Link to="/hospital/signup" className="font-semibold text-rose-600 hover:text-rose-700">
+            Create account
+          </Link>
+        </p>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default HospitalLoginPage;

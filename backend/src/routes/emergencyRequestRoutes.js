@@ -20,15 +20,16 @@ import {
 
 const emergencyRequestRouter = Router();
 const allowedRoles = [ROLES.SUPER_ADMIN, ROLES.HOSPITAL, ROLES.BLOOD_BANK];
+const adminOnlyRoles = [ROLES.SUPER_ADMIN];
 
 emergencyRequestRouter.get("/", authenticate, authorizeRoles(...allowedRoles), getEmergencyRequests);
 emergencyRequestRouter.post("/add", authenticate, authorizeRoles(...allowedRoles), validateCreateEmergencyPayload, createRequest);
-emergencyRequestRouter.put("/update/:id", authenticate, authorizeRoles(...allowedRoles), validateUpdateEmergencyPayload, editRequest);
-emergencyRequestRouter.delete("/:id", authenticate, authorizeRoles(...allowedRoles), removeRequest);
+emergencyRequestRouter.put("/update/:id", authenticate, authorizeRoles(...adminOnlyRoles), validateUpdateEmergencyPayload, editRequest);
+emergencyRequestRouter.delete("/:id", authenticate, authorizeRoles(...adminOnlyRoles), removeRequest);
 
-emergencyRequestRouter.patch("/:id/approve", authenticate, authorizeRoles(...allowedRoles), approveEmergencyRequest);
-emergencyRequestRouter.patch("/:id/reject", authenticate, authorizeRoles(...allowedRoles), rejectEmergencyRequest);
-emergencyRequestRouter.patch("/:id/assign", authenticate, authorizeRoles(...allowedRoles), validateAssignDonorPayload, assignEmergencyDonor);
-emergencyRequestRouter.patch("/:id/resolve", authenticate, authorizeRoles(...allowedRoles), resolveEmergencyRequest);
+emergencyRequestRouter.patch("/:id/approve", authenticate, authorizeRoles(...adminOnlyRoles), approveEmergencyRequest);
+emergencyRequestRouter.patch("/:id/reject", authenticate, authorizeRoles(...adminOnlyRoles), rejectEmergencyRequest);
+emergencyRequestRouter.patch("/:id/assign", authenticate, authorizeRoles(...adminOnlyRoles), validateAssignDonorPayload, assignEmergencyDonor);
+emergencyRequestRouter.patch("/:id/resolve", authenticate, authorizeRoles(...adminOnlyRoles), resolveEmergencyRequest);
 
 export default emergencyRequestRouter;

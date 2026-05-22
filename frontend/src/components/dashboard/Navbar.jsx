@@ -3,10 +3,12 @@ import toast from "react-hot-toast";
 import { logout } from "../../redux/authSlice";
 import { toggleSidebar } from "../../redux/uiSlice";
 import NotificationDropdown from "./NotificationDropdown";
+import { ROLES } from "../../utils/roles";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const isHospital = user?.role === ROLES.HOSPITAL;
 
   const handleLogout = () => {
     dispatch(logout());
@@ -25,8 +27,10 @@ const Navbar = () => {
             Menu
           </button>
           <div>
-            <h1 className="text-xl font-bold text-slate-900">Admin Dashboard</h1>
-            <p className="text-xs text-slate-500">Realtime healthcare emergency operations</p>
+            <h1 className="text-xl font-bold text-slate-900">{isHospital ? "Hospital Dashboard" : "Admin Dashboard"}</h1>
+            <p className="text-xs text-slate-500">
+              {isHospital ? "View availability and create emergency requests" : "Realtime healthcare emergency operations"}
+            </p>
           </div>
         </div>
 
