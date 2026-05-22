@@ -1,0 +1,18 @@
+[      70ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=80a6b785:14337
+[     220ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5173/login:0
+[  341686ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=80a6b785:14337
+[  342206ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:5173/login:0
+[  401289ms] [ERROR] Failed to load resource: the server responded with a status of 504 (Outdated Optimize Dep) @ http://localhost:5173/node_modules/.vite/deps/socket__io-client.js?v=2d1e9443:0
+[  401292ms] [ERROR] [vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:928
+[  401293ms] [ERROR] [vite] Failed to reload /src/pages/DashboardPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:928
+[  401309ms] [ERROR] [vite] Failed to reload /src/components/dashboard/Navbar.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:928
+[  508142ms] [ERROR] [vite] Failed to reload /src/routes/AppRoutes.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:928
+[  508148ms] [ERROR] [vite] Failed to reload /src/pages/DashboardPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:928
+[  555395ms] [ERROR] [vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:928
+[  582204ms] [ERROR] [vite] Failed to reload /src/components/dashboard/Navbar.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:928
+[  582204ms] [ERROR] [vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:928
+[  594638ms] [ERROR] [vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:928
+[  594685ms] [ERROR] [vite] Failed to reload /src/layouts/DashboardLayout.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:928
+[  594703ms] [ERROR] [vite] Failed to reload /src/components/dashboard/Navbar.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:928
+[  620522ms] [ERROR] [vite] Failed to reload /src/routes/AppRoutes.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:928
+[ 1147661ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:5173/@vite/client:992
