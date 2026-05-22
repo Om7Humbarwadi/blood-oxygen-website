@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 const PRIORITY_LEVELS = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
-const REQUEST_STATUS = ["PENDING", "APPROVED", "REJECTED", "ASSIGNED", "RESOLVED"];
+const REQUEST_STATUS = ["PENDING", "APPROVED", "FORWARDED_TO_APP", "REJECTED", "ASSIGNED", "RESOLVED"];
+const REQUEST_TYPES = ["BLOOD", "OXYGEN"];
 
 const emergencyRequestSchema = new mongoose.Schema(
   {
@@ -10,11 +11,22 @@ const emergencyRequestSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    requestType: {
+      type: String,
+      enum: REQUEST_TYPES,
+      default: "BLOOD",
+      index: true,
+    },
     bloodGroup: {
       type: String,
-      required: true,
       enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
       index: true,
+      default: null,
+    },
+    oxygenUnits: {
+      type: Number,
+      min: 1,
+      default: null,
     },
     hospital: {
       type: String,
@@ -48,11 +60,15 @@ const emergencyRequestSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    forwardedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
 
 const EmergencyRequest = mongoose.model("EmergencyRequest", emergencyRequestSchema);
 
-export { PRIORITY_LEVELS, REQUEST_STATUS };
+export { PRIORITY_LEVELS, REQUEST_STATUS, REQUEST_TYPES };
 export default EmergencyRequest;

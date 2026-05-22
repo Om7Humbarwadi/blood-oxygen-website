@@ -13,4 +13,16 @@ export const authService = {
     const { data } = await api.get("/auth/profile");
     return data.data;
   },
+  listPendingUsers: async () => {
+    const { data } = await api.get("/auth/pending-users");
+    return data.data;
+  },
+  approvePendingUser: async (id) => {
+    const { data } = await api.patch(`/auth/pending-users/${id}/approve`);
+    return data.data;
+  },
+  rejectPendingUser: async (id, rejectionReason = "") => {
+    const { data } = await api.patch(`/auth/pending-users/${id}/reject`, { rejectionReason });
+    return data.data;
+  },
 };

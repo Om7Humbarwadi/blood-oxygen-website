@@ -10,6 +10,7 @@ const priorityClass = {
 const statusClass = {
   PENDING: "bg-slate-100 text-slate-700",
   APPROVED: "bg-blue-100 text-blue-700",
+  FORWARDED_TO_APP: "bg-amber-100 text-amber-700",
   REJECTED: "bg-rose-100 text-rose-700",
   ASSIGNED: "bg-violet-100 text-violet-700",
   RESOLVED: "bg-emerald-100 text-emerald-700",
@@ -38,7 +39,8 @@ const EmergencyTable = ({ rows, loading, onView }) => {
         <thead className="bg-slate-50">
           <tr>
             <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Patient</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Blood Group</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Type</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Details</th>
             <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Hospital</th>
             <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Priority</th>
             <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
@@ -50,7 +52,10 @@ const EmergencyTable = ({ rows, loading, onView }) => {
           {rows.map((row) => (
             <tr key={row._id}>
               <td className="px-4 py-3 text-sm font-semibold text-slate-900">{row.patientName}</td>
-              <td className="px-4 py-3 text-sm text-slate-700">{row.bloodGroup}</td>
+              <td className="px-4 py-3 text-sm text-slate-700">{row.requestType || "BLOOD"}</td>
+              <td className="px-4 py-3 text-sm text-slate-700">
+                {(row.requestType || "BLOOD") === "OXYGEN" ? `${row.oxygenUnits || "-"} units` : row.bloodGroup || "-"}
+              </td>
               <td className="px-4 py-3 text-sm text-slate-700">{row.hospital}</td>
               <td className="px-4 py-3 text-sm">
                 <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${priorityClass[row.priority] || priorityClass.MEDIUM}`}>

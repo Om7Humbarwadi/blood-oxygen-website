@@ -1,17 +1,25 @@
 import AppError from "../utils/AppError.js";
-import { PRIORITY_LEVELS, REQUEST_STATUS } from "../models/EmergencyRequest.js";
+import { PRIORITY_LEVELS, REQUEST_STATUS, REQUEST_TYPES } from "../models/EmergencyRequest.js";
 
 const VALID_BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 export const validateCreateEmergencyPayload = (req, res, next) => {
-  const { patientName, bloodGroup, hospital, priority } = req.body;
+  const { patientName, requestType = "BLOOD", bloodGroup, oxygenUnits, hospital, priority } = req.body;
 
-  if (!patientName || !bloodGroup || !hospital || !priority) {
-    return next(new AppError("patientName, bloodGroup, hospital and priority are required", 400));
+  if (!patientName || !hospital || !priority) {
+    return next(new AppError("patientName, hospital and priority are required", 400));
   }
 
-  if (!VALID_BLOOD_GROUPS.includes(bloodGroup)) {
+  if (!REQUEST_TYPES.includes(requestType)) {
+    return next(new AppError("Invalid request type", 400));
+  }
+
+  if (requestType === "BLOOD" && !VALID_BLOOD_GROUPS.includes(bloodGroup)) {
     return next(new AppError("Invalid blood group", 400));
+  }
+
+  if (requestType === "OXYGEN" && (!Number.isFinite(Number(oxygenUnits)) || Number(oxygenUnits) <= 0)) {
+    return next(new AppError("oxygenUnits must be greater than 0 for oxygen requests", 400));
   }
 
   if (!PRIORITY_LEVELS.includes(priority)) {
@@ -22,10 +30,18 @@ export const validateCreateEmergencyPayload = (req, res, next) => {
 };
 
 export const validateUpdateEmergencyPayload = (req, res, next) => {
-  const { patientName, bloodGroup, hospital, priority, status, assignedDonor } = req.body;
+  const { patientName, requestType, bloodGroup, oxygenUnits, hospital, priority, status, assignedDonor } = req.body;
+
+  if (requestType && !REQUEST_TYPES.includes(requestType)) {
+    return next(new AppError("Invalid request type", 400));
+  }
 
   if (bloodGroup && !VALID_BLOOD_GROUPS.includes(bloodGroup)) {
     return next(new AppError("Invalid blood group", 400));
+  }
+
+  if (oxygenUnits !== undefined && (!Number.isFinite(Number(oxygenUnits)) || Number(oxygenUnits) <= 0)) {
+    return next(new AppError("oxygenUnits must be greater than 0", 400));
   }
 
   if (priority && !PRIORITY_LEVELS.includes(priority)) {

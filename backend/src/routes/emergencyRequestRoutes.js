@@ -4,8 +4,8 @@ import {
   assignEmergencyDonor,
   createRequest,
   editRequest,
+  forwardEmergencyRequest,
   getEmergencyRequests,
-  rejectEmergencyRequest,
   removeRequest,
   resolveEmergencyRequest,
 } from "../controllers/emergencyRequestController.js";
@@ -28,7 +28,7 @@ emergencyRequestRouter.put("/update/:id", authenticate, authorizeRoles(...adminO
 emergencyRequestRouter.delete("/:id", authenticate, authorizeRoles(...adminOnlyRoles), removeRequest);
 
 emergencyRequestRouter.patch("/:id/approve", authenticate, authorizeRoles(...adminOnlyRoles), approveEmergencyRequest);
-emergencyRequestRouter.patch("/:id/reject", authenticate, authorizeRoles(...adminOnlyRoles), rejectEmergencyRequest);
+emergencyRequestRouter.patch("/:id/forward-to-app", authenticate, authorizeRoles(...adminOnlyRoles), forwardEmergencyRequest);
 emergencyRequestRouter.patch("/:id/assign", authenticate, authorizeRoles(...adminOnlyRoles), validateAssignDonorPayload, assignEmergencyDonor);
 emergencyRequestRouter.patch("/:id/resolve", authenticate, authorizeRoles(...adminOnlyRoles), resolveEmergencyRequest);
 

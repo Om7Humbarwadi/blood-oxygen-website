@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
-import User from "../models/User.js";
+import User, { ACCOUNT_STATUS } from "../models/User.js";
 import AppError from "../utils/AppError.js";
+import { ROLES } from "../utils/roles.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
 
 const toPublicUser = (user) => ({
@@ -8,6 +9,9 @@ const toPublicUser = (user) => ({
   name: user.name,
   email: user.email,
   role: user.role,
+  accountStatus: user.accountStatus,
+  approvedAt: user.approvedAt,
+  rejectionReason: user.rejectionReason,
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
 });
@@ -25,7 +29,17 @@ export const registerUser = async ({ name, email, password, role }) => {
     email,
     password: hashedPassword,
     role,
+    accountStatus: role === ROLES.SUPER_ADMIN ? ACCOUNT_STATUS.APPROVED : ACCOUNT_STATUS.PENDING,
+    approvedAt: role === ROLES.SUPER_ADMIN ? new Date() : null,
   });
+
+  if (user.accountStatus !== ACCOUNT_STATUS.APPROVED) {
+    return {
+      user: toPublicUser(user),
+      accessToken: null,
+      refreshToken: null,
+    };
+  }
 
   const tokenPayload = { sub: user._id.toString(), role: user.role };
 
@@ -48,6 +62,15 @@ export const loginUser = async ({ email, password }) => {
     throw new AppError("Invalid credentials", 401);
   }
 
+  if (user.accountStatus === ACCOUNT_STATUS.PENDING) {
+    throw new AppError("Account approval is pending with admin", 403);
+  }
+
+  if (user.accountStatus === ACCOUNT_STATUS.REJECTED) {
+    const reasonSuffix = user.rejectionReason ? `: ${user.rejectionReason}` : "";
+    throw new AppError(`Account request was rejected${reasonSuffix}`, 403);
+  }
+
   const tokenPayload = { sub: user._id.toString(), role: user.role };
 
   return {
@@ -63,6 +86,53 @@ export const getUserProfile = async (userId) => {
   if (!user) {
     throw new AppError("User not found", 404);
   }
+
+  return toPublicUser(user);
+};
+
+export const listPendingUsers = async () => {
+  const users = await User.find({
+    accountStatus: ACCOUNT_STATUS.PENDING,
+    role: { $ne: ROLES.SUPER_ADMIN },
+  }).sort({ createdAt: 1 });
+
+  return users.map(toPublicUser);
+};
+
+export const approveUserAccount = async (targetUserId, adminUserId) => {
+  const user = await User.findById(targetUserId);
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  if (user.role === ROLES.SUPER_ADMIN) {
+    throw new AppError("Super admin account cannot be modified", 400);
+  }
+
+  user.accountStatus = ACCOUNT_STATUS.APPROVED;
+  user.approvedAt = new Date();
+  user.approvedBy = adminUserId;
+  user.rejectionReason = "";
+  await user.save();
+
+  return toPublicUser(user);
+};
+
+export const rejectUserAccount = async (targetUserId, adminUserId, rejectionReason = "") => {
+  const user = await User.findById(targetUserId);
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  if (user.role === ROLES.SUPER_ADMIN) {
+    throw new AppError("Super admin account cannot be modified", 400);
+  }
+
+  user.accountStatus = ACCOUNT_STATUS.REJECTED;
+  user.approvedAt = null;
+  user.approvedBy = adminUserId;
+  user.rejectionReason = rejectionReason.trim();
+  await user.save();
 
   return toPublicUser(user);
 };

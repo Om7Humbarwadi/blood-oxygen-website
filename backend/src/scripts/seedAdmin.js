@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import connectDatabase from "../config/database.js";
-import User from "../models/User.js";
+import User, { ACCOUNT_STATUS } from "../models/User.js";
 import { ROLES } from "../utils/roles.js";
 
 const seedAdmin = async () => {
@@ -17,6 +17,9 @@ const seedAdmin = async () => {
     existingAdmin.name = adminName;
     existingAdmin.password = hashedPassword;
     existingAdmin.role = ROLES.SUPER_ADMIN;
+    existingAdmin.accountStatus = ACCOUNT_STATUS.APPROVED;
+    existingAdmin.approvedAt = new Date();
+    existingAdmin.rejectionReason = "";
     await existingAdmin.save();
     console.log(`Admin user updated: ${adminEmail}`);
   } else {
@@ -25,6 +28,8 @@ const seedAdmin = async () => {
       email: adminEmail,
       password: hashedPassword,
       role: ROLES.SUPER_ADMIN,
+      accountStatus: ACCOUNT_STATUS.APPROVED,
+      approvedAt: new Date(),
     });
     console.log(`Admin user created: ${adminEmail}`);
   }

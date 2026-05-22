@@ -5,8 +5,8 @@ import {
   assignRequestDonor,
   createEmergencyRequest,
   deleteEmergencyRequest,
+  forwardRequestToApp,
   listEmergencyRequests,
-  rejectRequest,
   resolveRequest,
   updateEmergencyRequest,
 } from "../services/emergencyRequestService.js";
@@ -42,10 +42,10 @@ export const approveEmergencyRequest = asyncHandler(async (req, res) => {
   return successResponse(res, 200, "Emergency request approved", result);
 });
 
-export const rejectEmergencyRequest = asyncHandler(async (req, res) => {
-  const result = await rejectRequest(req.params.id, req.body.notes || "");
-  emitSocketEvent(req, SOCKET_EVENTS.NEW_EMERGENCY, { ...result, rejected: true });
-  return successResponse(res, 200, "Emergency request rejected", result);
+export const forwardEmergencyRequest = asyncHandler(async (req, res) => {
+  const result = await forwardRequestToApp(req.params.id, req.body.notes || "");
+  emitSocketEvent(req, SOCKET_EVENTS.REQUEST_FORWARDED, result);
+  return successResponse(res, 200, "Emergency request forwarded to app queue", result);
 });
 
 export const assignEmergencyDonor = asyncHandler(async (req, res) => {

@@ -21,8 +21,8 @@ export const emergencyService = {
     const { data } = await api.patch(`/emergency-requests/${id}/approve`);
     return data;
   },
-  reject: async (id, notes) => {
-    const { data } = await api.patch(`/emergency-requests/${id}/reject`, { notes });
+  forwardToApp: async (id, notes) => {
+    const { data } = await api.patch(`/emergency-requests/${id}/forward-to-app`, { notes });
     return data;
   },
   assignDonor: async (id, assignedDonor) => {

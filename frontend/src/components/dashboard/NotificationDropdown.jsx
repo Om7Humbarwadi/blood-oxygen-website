@@ -1,12 +1,16 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 import { useRealtime } from "../../context/RealtimeContext";
 import { emergencyService } from "../../services/emergencyService";
+import { ROLES } from "../../utils/roles";
 
 const NotificationDropdown = () => {
   const [open, setOpen] = useState(false);
   const [approving, setApproving] = useState(false);
   const { notifications, clearNotifications, removeNotification } = useRealtime();
+  const user = useSelector((state) => state.auth.user);
+  const canTakeRequestActions = user?.role === ROLES.SUPER_ADMIN;
 
   const handleApprove = async (notification) => {
     try {
@@ -22,19 +26,21 @@ const NotificationDropdown = () => {
     }
   };
 
-  const handleReject = async (notification) => {
+  const handleForwardToApp = async (notification) => {
     try {
       setApproving(true);
       const requestId = notification.payload._id;
-      await emergencyService.reject(requestId, "");
+      await emergencyService.forwardToApp(requestId, "Forwarded due to unavailable stock");
       removeNotification(notification.id);
-      toast.success("Request rejected");
+      toast.success("Request forwarded to app queue");
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to reject request");
+      toast.error(error?.response?.data?.message || "Failed to forward request");
     } finally {
       setApproving(false);
     }
   };
+
+  return (
     <div className="relative">
       <button
         type="button"
@@ -64,6 +70,28 @@ const NotificationDropdown = () => {
                 <div key={item.id} className="rounded-lg border border-slate-200 p-2.5">
                   <p className="text-xs font-semibold text-slate-800">{item.title}</p>
                   <p className="mt-1 text-xs text-slate-600">{item.message}</p>
+                  
+                  {/* Action buttons for emergency requests */}
+                  {canTakeRequestActions && item.type === "new-emergency" && item.payload && (
+                    <div className="mt-2 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleApprove(item)}
+                        disabled={approving}
+                        className="flex-1 rounded-lg bg-blue-600 px-2 py-1 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-70"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleForwardToApp(item)}
+                        disabled={approving}
+                        className="flex-1 rounded-lg bg-amber-600 px-2 py-1 text-xs font-semibold text-white hover:bg-amber-700 disabled:opacity-70"
+                      >
+                        Forward to App
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))
             )}

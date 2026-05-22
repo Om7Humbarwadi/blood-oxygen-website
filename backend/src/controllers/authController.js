@@ -1,6 +1,13 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import { successResponse } from "../utils/response.js";
-import { getUserProfile, loginUser, registerUser } from "../services/authService.js";
+import {
+  approveUserAccount,
+  getUserProfile,
+  listPendingUsers,
+  loginUser,
+  registerUser,
+  rejectUserAccount,
+} from "../services/authService.js";
 
 export const register = asyncHandler(async (req, res) => {
   const result = await registerUser(req.body);
@@ -15,4 +22,19 @@ export const login = asyncHandler(async (req, res) => {
 export const profile = asyncHandler(async (req, res) => {
   const user = await getUserProfile(req.user.id);
   return successResponse(res, 200, "Profile fetched successfully", user);
+});
+
+export const getPendingUsers = asyncHandler(async (req, res) => {
+  const users = await listPendingUsers();
+  return successResponse(res, 200, "Pending users fetched successfully", users);
+});
+
+export const approvePendingUser = asyncHandler(async (req, res) => {
+  const user = await approveUserAccount(req.params.id, req.user.id);
+  return successResponse(res, 200, "User account approved successfully", user);
+});
+
+export const rejectPendingUser = asyncHandler(async (req, res) => {
+  const user = await rejectUserAccount(req.params.id, req.user.id, req.body?.rejectionReason || "");
+  return successResponse(res, 200, "User account rejected successfully", user);
 });

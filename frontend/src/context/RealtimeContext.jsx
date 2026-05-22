@@ -7,6 +7,7 @@ const RealtimeContext = createContext({
   notifications: [],
   activities: [],
   clearNotifications: () => {},
+  removeNotification: () => {},
 });
 
 const MAX_ITEMS = 20;
@@ -89,16 +90,28 @@ export const RealtimeProvider = ({ children }) => {
       pushEvent(note, "warning");
     };
 
+    const onRequestForwarded = (payload) => {
+      const note = buildNotification(
+        "request-forwarded-to-app",
+        "Request forwarded to app",
+        `${payload.patientName || "Request"} forwarded for mobile app fulfillment`,
+        payload
+      );
+      pushEvent(note, "warning");
+    };
+
     socket.on("new-emergency", onNewEmergency);
     socket.on("inventory-updated", onInventoryUpdated);
     socket.on("request-approved", onRequestApproved);
     socket.on("donor-assigned", onDonorAssigned);
+    socket.on("request-forwarded-to-app", onRequestForwarded);
 
     return () => {
       socket.off("new-emergency", onNewEmergency);
       socket.off("inventory-updated", onInventoryUpdated);
       socket.off("request-approved", onRequestApproved);
       socket.off("donor-assigned", onDonorAssigned);
+      socket.off("request-forwarded-to-app", onRequestForwarded);
     };
   }, [token]);
 
@@ -107,6 +120,7 @@ export const RealtimeProvider = ({ children }) => {
       notifications,
       activities,
       clearNotifications: () => setNotifications([]),
+      removeNotification: (id) => setNotifications((prev) => prev.filter((item) => item.id !== id)),
     }),
     [notifications, activities]
   );

@@ -4,11 +4,16 @@ import AppError from "../utils/AppError.js";
 const sanitize = (doc) => (doc.toObject ? doc.toObject() : doc);
 
 export const createEmergencyRequest = async (payload) => {
+  const requestType = payload.requestType || "BLOOD";
   const created = await EmergencyRequest.create({
     ...payload,
+    requestType,
+    bloodGroup: requestType === "BLOOD" ? payload.bloodGroup : null,
+    oxygenUnits: requestType === "OXYGEN" ? Number(payload.oxygenUnits) : null,
     status: "PENDING",
     assignedDonor: "",
     resolvedAt: null,
+    forwardedAt: null,
   });
   return sanitize(created);
 };
@@ -25,6 +30,7 @@ export const listEmergencyRequests = async ({ page = 1, limit = 10, search = "",
       { hospital: { $regex: search, $options: "i" } },
       { assignedDonor: { $regex: search, $options: "i" } },
       { bloodGroup: { $regex: search, $options: "i" } },
+      { requestType: { $regex: search, $options: "i" } },
     ];
   }
 
@@ -57,8 +63,17 @@ export const updateEmergencyRequest = async (id, payload) => {
   }
 
   Object.assign(existing, payload);
+  if (payload.requestType === "BLOOD") {
+    existing.oxygenUnits = null;
+  }
+  if (payload.requestType === "OXYGEN") {
+    existing.bloodGroup = null;
+  }
   if (payload.status !== "RESOLVED") {
     existing.resolvedAt = null;
+  }
+  if (payload.status !== "FORWARDED_TO_APP") {
+    existing.forwardedAt = null;
   }
 
   await existing.save();
@@ -90,6 +105,15 @@ export const approveRequest = async (id) => {
 export const rejectRequest = async (id, notes = "") => {
   const record = await getRequestOrThrow(id);
   record.status = "REJECTED";
+  if (notes) record.notes = notes;
+  await record.save();
+  return sanitize(record);
+};
+
+export const forwardRequestToApp = async (id, notes = "") => {
+  const record = await getRequestOrThrow(id);
+  record.status = "FORWARDED_TO_APP";
+  record.forwardedAt = new Date();
   if (notes) record.notes = notes;
   await record.save();
   return sanitize(record);

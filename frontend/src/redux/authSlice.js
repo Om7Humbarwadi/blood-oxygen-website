@@ -76,11 +76,19 @@ const authSlice = createSlice({
       })
       .addCase(registerThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.token = action.payload.accessToken;
-        state.user = action.payload.user;
-        state.isAuthenticated = true;
-        localStorage.setItem(TOKEN_KEY, action.payload.accessToken);
-        localStorage.setItem(USER_KEY, JSON.stringify(action.payload.user));
+        if (action.payload.accessToken) {
+          state.token = action.payload.accessToken;
+          state.user = action.payload.user;
+          state.isAuthenticated = true;
+          localStorage.setItem(TOKEN_KEY, action.payload.accessToken);
+          localStorage.setItem(USER_KEY, JSON.stringify(action.payload.user));
+        } else {
+          state.token = null;
+          state.user = null;
+          state.isAuthenticated = false;
+          localStorage.removeItem(TOKEN_KEY);
+          localStorage.removeItem(USER_KEY);
+        }
       })
       .addCase(registerThunk.rejected, (state, action) => {
         state.loading = false;
