@@ -52,5 +52,5 @@ export const sidebarItems = [
   { id: "requests", label: "Emergency Requests", path: "/admin/requests" },
   { id: "reports", label: "Reports & Analytics", path: "/admin/reports" },
   { id: "donors", label: "Donors", path: "/admin/dashboard" },
-  { id: "approvals", label: "Approvals", path: "/admin/dashboard" },
+  { id: "approvals", label: "Hospital Approvals", path: "/admin/approvals" },
 ];

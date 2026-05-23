@@ -26,7 +26,9 @@ const DashboardLayout = ({ children }) => {
 
         <div className="flex min-w-0 flex-1 flex-col">
           <Navbar />
-          <main className="mx-auto w-full max-w-[1500px] flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+          <main className="mx-auto w-full max-w-[1500px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
+            <div className="rounded-[28px] border border-white/70 bg-white/35 p-3 sm:p-4">{children}</div>
+          </main>
         </div>
       </div>
     </div>

@@ -49,16 +49,20 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-100 px-4 py-10">
-      <div className="pointer-events-none absolute -left-28 -top-28 h-80 w-80 rounded-full bg-rose-200/70 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-red-300/50 blur-3xl" />
+    <div className="flex min-h-screen items-center justify-center bg-[#eceff3] px-4 py-10">
+      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-[0_20px_60px_-24px_rgba(15,23,42,0.35)] sm:p-10">
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.26em] text-rose-600">Emergency Admin</p>
+            <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-slate-900">Sign In</h1>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">Secure access to healthcare emergency command center.</p>
+          </div>
+          <div className="hidden h-12 w-12 items-center justify-center rounded-2xl border border-rose-100 bg-rose-50 text-xl sm:flex">
+            +
+          </div>
+        </div>
 
-      <div className="relative w-full max-w-md rounded-2xl border border-white/70 bg-white/90 p-8 shadow-xl backdrop-blur">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-500">Emergency Admin</p>
-        <h1 className="mt-2 text-3xl font-bold text-slate-900">Sign In</h1>
-        <p className="mt-2 text-sm text-slate-600">Secure access to healthcare emergency command center.</p>
-
-        <form className="mt-6 space-y-4" onSubmit={onSubmit}>
+        <form className="space-y-5" onSubmit={onSubmit}>
           <InputField
             label="Email"
             type="email"
@@ -75,9 +79,11 @@ const LoginPage = () => {
             onChange={onChange}
             placeholder="Enter your password"
           />
-          <Button type="submit" loading={loading}>
-            Log In
-          </Button>
+          <div className="pt-2">
+            <Button type="submit" loading={loading}>
+              Log In
+            </Button>
+          </div>
         </form>
       </div>
     </div>
