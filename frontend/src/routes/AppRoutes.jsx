@@ -8,6 +8,7 @@ import InventoryPage from "../pages/InventoryPage";
 import OxygenInventoryPage from "../pages/OxygenInventoryPage";
 import EmergencyRequestsPage from "../pages/EmergencyRequestsPage";
 import ReportsAnalyticsPage from "../pages/ReportsAnalyticsPage";
+import AdminApprovalsPage from "../pages/AdminApprovalsPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProtectedRoute from "./ProtectedRoute";
@@ -35,6 +36,7 @@ const AppRoutes = () => {
       <Route path="/admin/oxygen" element={<ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN, ROLES.OXYGEN_SUPPLIER]}><DashboardLayout><OxygenInventoryPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/admin/requests" element={<ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN, ROLES.BLOOD_BANK]}><DashboardLayout><EmergencyRequestsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]}><DashboardLayout><ReportsAnalyticsPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/admin/approvals" element={<ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]}><DashboardLayout><AdminApprovalsPage /></DashboardLayout></ProtectedRoute>} />
 
       <Route path="/login" element={<Navigate to="/admin" replace />} />
       <Route path="/" element={<Navigate to="/admin" replace />} />
