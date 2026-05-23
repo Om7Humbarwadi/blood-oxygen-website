@@ -28,6 +28,11 @@ const emergencyRequestSchema = new mongoose.Schema(
       min: 1,
       default: null,
     },
+    unitsRequired: {
+      type: Number,
+      min: 1,
+      default: 1,
+    },
     hospital: {
       type: String,
       required: true,
@@ -50,6 +55,17 @@ const emergencyRequestSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: "",
+    },
+    contactNumber: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+      index: true,
     },
     notes: {
       type: String,

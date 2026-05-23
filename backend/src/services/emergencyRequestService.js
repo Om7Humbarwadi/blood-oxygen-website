@@ -3,13 +3,16 @@ import AppError from "../utils/AppError.js";
 
 const sanitize = (doc) => (doc.toObject ? doc.toObject() : doc);
 
-export const createEmergencyRequest = async (payload) => {
+export const createEmergencyRequest = async (payload, user) => {
   const requestType = payload.requestType || "BLOOD";
   const created = await EmergencyRequest.create({
     ...payload,
     requestType,
     bloodGroup: requestType === "BLOOD" ? payload.bloodGroup : null,
     oxygenUnits: requestType === "OXYGEN" ? Number(payload.oxygenUnits) : null,
+    unitsRequired: Number(payload.unitsRequired) > 0 ? Number(payload.unitsRequired) : 1,
+    contactNumber: payload.contactNumber || "",
+    createdBy: user?.id || null,
     status: "PENDING",
     assignedDonor: "",
     resolvedAt: null,
@@ -18,20 +21,43 @@ export const createEmergencyRequest = async (payload) => {
   return sanitize(created);
 };
 
-export const listEmergencyRequests = async ({ page = 1, limit = 10, search = "", status = "", priority = "" }) => {
+export const listEmergencyRequests = async ({ page = 1, limit = 10, search = "", status = "", priority = "", forApp = "false" }, user) => {
+  const isForApp = String(forApp).toLowerCase() === "true";
+  const isDonor = user?.role === "DONOR";
   const query = {};
+  const andConditions = [];
 
-  if (status) query.status = status;
+  if (status) {
+    query.status = status;
+  } else if (isForApp && !isDonor) {
+    query.status = { $in: ["FORWARDED_TO_APP", "ASSIGNED", "RESOLVED"] };
+  }
   if (priority) query.priority = priority;
 
   if (search) {
-    query.$or = [
+    andConditions.push({
+      $or: [
       { patientName: { $regex: search, $options: "i" } },
       { hospital: { $regex: search, $options: "i" } },
       { assignedDonor: { $regex: search, $options: "i" } },
       { bloodGroup: { $regex: search, $options: "i" } },
       { requestType: { $regex: search, $options: "i" } },
-    ];
+      { contactNumber: { $regex: search, $options: "i" } },
+      ],
+    });
+  }
+
+  if (isForApp && isDonor) {
+    andConditions.push({
+      $or: [
+      { status: { $in: ["FORWARDED_TO_APP", "ASSIGNED", "RESOLVED"] } },
+      { createdBy: user.id },
+      ],
+    });
+  }
+
+  if (andConditions.length) {
+    query.$and = andConditions;
   }
 
   const numericPage = Math.max(Number(page) || 1, 1);

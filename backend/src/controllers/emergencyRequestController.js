@@ -14,12 +14,12 @@ import { emitSocketEvent } from "../sockets/emitter.js";
 import { SOCKET_EVENTS } from "../sockets/events.js";
 
 export const getEmergencyRequests = asyncHandler(async (req, res) => {
-  const result = await listEmergencyRequests(req.query);
+  const result = await listEmergencyRequests(req.query, req.user);
   return successResponse(res, 200, "Emergency requests fetched successfully", result);
 });
 
 export const createRequest = asyncHandler(async (req, res) => {
-  const result = await createEmergencyRequest(req.body);
+  const result = await createEmergencyRequest(req.body, req.user);
   emitSocketEvent(req, SOCKET_EVENTS.NEW_EMERGENCY, result);
   return successResponse(res, 201, "Emergency request created successfully", result);
 });

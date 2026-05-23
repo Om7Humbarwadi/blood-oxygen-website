@@ -19,7 +19,7 @@ import {
 } from "../validators/emergencyRequestValidator.js";
 
 const emergencyRequestRouter = Router();
-const allowedRoles = [ROLES.SUPER_ADMIN, ROLES.HOSPITAL, ROLES.BLOOD_BANK];
+const allowedRoles = [ROLES.SUPER_ADMIN, ROLES.HOSPITAL, ROLES.BLOOD_BANK, ROLES.DONOR];
 const adminOnlyRoles = [ROLES.SUPER_ADMIN];
 
 emergencyRequestRouter.get("/", authenticate, authorizeRoles(...allowedRoles), getEmergencyRequests);

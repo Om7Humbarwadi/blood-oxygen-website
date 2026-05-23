@@ -17,10 +17,21 @@ dns.setServers([
 
 const app = express();
 const server = http.createServer(app);
+const allowedOrigins = env.clientOrigins;
+
+const corsOriginValidator = (origin, callback) => {
+  if (!origin) {
+    callback(null, true);
+    return;
+  }
+
+  const isAllowed = allowedOrigins.includes(origin);
+  callback(isAllowed ? null : new Error("Not allowed by CORS"), isAllowed);
+};
 
 const io = new SocketServer(server, {
   cors: {
-    origin: env.clientOrigin,
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
 });
@@ -28,7 +39,7 @@ const io = new SocketServer(server, {
 registerSocketHandlers(io);
 app.set("io", io);
 
-app.use(cors({ origin: env.clientOrigin }));
+app.use(cors({ origin: corsOriginValidator, credentials: true }));
 app.use(express.json());
 app.use("/api", apiRouter);
 app.use(notFound);

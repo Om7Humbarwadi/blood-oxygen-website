@@ -24,13 +24,15 @@ export const registerUser = async ({ name, email, password, role }) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  const shouldAutoApprove = role === ROLES.SUPER_ADMIN || role === ROLES.DONOR;
+
   const user = await User.create({
     name,
     email,
     password: hashedPassword,
     role,
-    accountStatus: role === ROLES.SUPER_ADMIN ? ACCOUNT_STATUS.APPROVED : ACCOUNT_STATUS.PENDING,
-    approvedAt: role === ROLES.SUPER_ADMIN ? new Date() : null,
+    accountStatus: shouldAutoApprove ? ACCOUNT_STATUS.APPROVED : ACCOUNT_STATUS.PENDING,
+    approvedAt: shouldAutoApprove ? new Date() : null,
   });
 
   if (user.accountStatus !== ACCOUNT_STATUS.APPROVED) {

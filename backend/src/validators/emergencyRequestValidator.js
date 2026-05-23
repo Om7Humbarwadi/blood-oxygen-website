@@ -4,7 +4,7 @@ import { PRIORITY_LEVELS, REQUEST_STATUS, REQUEST_TYPES } from "../models/Emerge
 const VALID_BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 export const validateCreateEmergencyPayload = (req, res, next) => {
-  const { patientName, requestType = "BLOOD", bloodGroup, oxygenUnits, hospital, priority } = req.body;
+  const { patientName, requestType = "BLOOD", bloodGroup, oxygenUnits, unitsRequired, hospital, priority, contactNumber } = req.body;
 
   if (!patientName || !hospital || !priority) {
     return next(new AppError("patientName, hospital and priority are required", 400));
@@ -22,15 +22,23 @@ export const validateCreateEmergencyPayload = (req, res, next) => {
     return next(new AppError("oxygenUnits must be greater than 0 for oxygen requests", 400));
   }
 
+  if (unitsRequired !== undefined && (!Number.isFinite(Number(unitsRequired)) || Number(unitsRequired) <= 0)) {
+    return next(new AppError("unitsRequired must be greater than 0", 400));
+  }
+
   if (!PRIORITY_LEVELS.includes(priority)) {
     return next(new AppError("Invalid priority", 400));
+  }
+
+  if (contactNumber !== undefined && !/^\+?[0-9]{10,15}$/.test(String(contactNumber).trim())) {
+    return next(new AppError("Invalid contact number", 400));
   }
 
   return next();
 };
 
 export const validateUpdateEmergencyPayload = (req, res, next) => {
-  const { patientName, requestType, bloodGroup, oxygenUnits, hospital, priority, status, assignedDonor } = req.body;
+  const { patientName, requestType, bloodGroup, oxygenUnits, unitsRequired, hospital, priority, status, assignedDonor, contactNumber } = req.body;
 
   if (requestType && !REQUEST_TYPES.includes(requestType)) {
     return next(new AppError("Invalid request type", 400));
@@ -42,6 +50,10 @@ export const validateUpdateEmergencyPayload = (req, res, next) => {
 
   if (oxygenUnits !== undefined && (!Number.isFinite(Number(oxygenUnits)) || Number(oxygenUnits) <= 0)) {
     return next(new AppError("oxygenUnits must be greater than 0", 400));
+  }
+
+  if (unitsRequired !== undefined && (!Number.isFinite(Number(unitsRequired)) || Number(unitsRequired) <= 0)) {
+    return next(new AppError("unitsRequired must be greater than 0", 400));
   }
 
   if (priority && !PRIORITY_LEVELS.includes(priority)) {
@@ -62,6 +74,10 @@ export const validateUpdateEmergencyPayload = (req, res, next) => {
 
   if (assignedDonor !== undefined && typeof assignedDonor !== "string") {
     return next(new AppError("assignedDonor must be a string", 400));
+  }
+
+  if (contactNumber !== undefined && !/^\+?[0-9]{10,15}$/.test(String(contactNumber).trim())) {
+    return next(new AppError("Invalid contact number", 400));
   }
 
   return next();
